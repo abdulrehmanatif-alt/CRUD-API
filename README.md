@@ -1,61 +1,50 @@
-# Task API
+# Task API with SQLite
 
-A simple REST API built with FastAPI that allows users to create, read, update, and delete tasks. This project was developed as part of a backend internship assignment.
+## Overview
 
-## Features
+This project is a simple CRUD API built with **FastAPI**. It allows users to create, read, update, and delete tasks. The project uses **SQLite** as its database, so task data is stored permanently and remains available even after the server is restarted.
 
-- Create tasks
-- View all tasks
-- View a single task by ID
-- Update tasks
-- Delete tasks
-- Automatic Swagger API documentation
-- Input validation
-- Proper HTTP status codes
+## Why SQLite?
+
+SQLite was chosen because it is:
+
+* Lightweight and easy to set up
+* Serverless (no separate database server required)
+* Included with Python through the built-in `sqlite3` module
+* Perfect for small projects and learning backend development
 
 ## Technologies Used
 
-- Python 3
-- FastAPI
-- Uvicorn
-- Pydantic
-- Git
+* Python
+* FastAPI
+* SQLite
+* sqlite3
+* Uvicorn
+* Pydantic
+
+## Project Structure
+
+```
+task-api/
+│
+├── main.py
+├── database.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+└── tasks.db (created automatically)
+```
 
 ## Installation
 
-1. Clone the repository
+Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone <your-github-repository-url>
+cd <repository-folder>
 ```
 
-2. Navigate to the project folder
-
-```bash
-cd task-api
-```
-
-3. Create a virtual environment
-
-```bash
-python -m venv .venv
-```
-
-4. Activate the virtual environment
-
-Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-Linux/macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-5. Install dependencies
+Install the required packages:
 
 ```bash
 pip install -r requirements.txt
@@ -63,64 +52,46 @@ pip install -r requirements.txt
 
 ## Running the Project
 
+Start the server:
+
 ```bash
 uvicorn main:app --reload
 ```
 
-Open:
-
-```
-http://127.0.0.1:8000
-```
-
-Swagger Documentation:
+Open the API documentation:
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
+## Database
+
+The application automatically creates a SQLite database named:
+
+```
+tasks.db
+```
+
+When the application runs for the first time:
+
+* The database file is created automatically.
+* The `tasks` table is created if it does not exist.
+* Three sample tasks are inserted only if the table is empty.
+
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | / | API Information |
-| GET | /health | Health Check |
-| GET | /tasks | Get all tasks |
-| GET | /tasks/{task_id} | Get task by ID |
-| POST | /tasks | Create a task |
-| PUT | /tasks/{task_id} | Update a task |
-| DELETE | /tasks/{task_id} | Delete a task |
+| Method | Endpoint      | Description       |
+| ------ | ------------- | ----------------- |
+| GET    | `/tasks`      | Get all tasks     |
+| GET    | `/tasks/{id}` | Get a task by ID  |
+| POST   | `/tasks`      | Create a new task |
+| PUT    | `/tasks/{id}` | Update a task     |
+| DELETE | `/tasks/{id}` | Delete a task     |
 
-## Example Request
+## Example SQL Query
 
-POST /tasks
-
-```json
-{
-    "title": "Complete assignment"
-}
-```
-
-Example Response
-
-```json
-{
-    "id": 4,
-    "title": "Complete assignment",
-    "done": false
-}
-```
-
-## Project Structure
-
-```
-task-api/
-│
-├── .venv/
-├── main.py
-├── README.md
-├── requirements.txt
-└── .gitignore
+```sql
+SELECT * FROM tasks;
 ```
 
 ## Author
