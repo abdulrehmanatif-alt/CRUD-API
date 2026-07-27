@@ -18,23 +18,6 @@ class TaskUpdate(BaseModel):
     title: str
     done: bool
 
-tasks = [
-    {
-        "id": 1,
-        "title": "Complete Python assignment",
-        "done": False
-    },
-    {
-        "id": 2,
-        "title": "Study FastAPI",
-        "done": True
-    },
-    {
-        "id": 3,
-        "title": "Push project to GitHub",
-        "done": False
-    }
-]
 
 @app.get(
     "/",
@@ -107,17 +90,25 @@ def create_task(task: TaskCreate):
             detail="Title cannot be empty."
         )
 
-    new_id = max(task["id"] for task in tasks) + 1
+    conn = get_connection()
+    cursor = conn.cursor()
 
-    new_task = {
-        "id": new_id,
+    cursor.execute(
+        "INSERT INTO tasks (title, done) VALUES (?, ?)",
+        (task.title, False)
+    )
+
+    conn.commit()
+
+    task_id = cursor.lastrowid
+
+    conn.close()
+
+    return {
+        "id": task_id,
         "title": task.title,
         "done": False
     }
-
-    tasks.append(new_task)
-
-    return new_task
 
 @app.put(
     "/tasks/{task_id}",
