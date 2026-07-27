@@ -43,11 +43,18 @@ def health():
     }
 
 @app.get("/tasks")
-def get_tasks():
+def get_tasks(search: str | None = None):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM tasks")
+    if search:
+        cursor.execute(
+            "SELECT * FROM tasks WHERE title LIKE ?",
+            (f"%{search}%",)
+        )
+    else:
+        cursor.execute("SELECT * FROM tasks")
+
     rows = cursor.fetchall()
 
     conn.close()
