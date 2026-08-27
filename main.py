@@ -3,11 +3,9 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from database import Base, engine, get_db
+from database import get_db
 from models import Task
 
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Task API",
