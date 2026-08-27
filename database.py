@@ -1,49 +1,39 @@
 import os
 
-import psycopg
-from psycopg.rows import dict_row
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 load_dotenv()
 
 
-def get_connection():
-    return psycopg.connect(
-        host=os.getenv("POSTGRES_HOST"),
-        port=os.getenv("POSTGRES_PORT"),
-        dbname=os.getenv("POSTGRES_DB"),
-        user=os.getenv("POSTGRES_USER"),
-        password=os.getenv("POSTGRES_PASSWORD"),
-        row_factory=dict_row
-    )
+DATABASE_URL = (
+    f"postgresql+psycopg://"
+    f"{os.getenv('POSTGRES_USER')}:"
+    f"{os.getenv('POSTGRES_PASSWORD')}@"
+    f"{os.getenv('POSTGRES_HOST')}:"
+    f"{os.getenv('POSTGRES_PORT')}/"
+    f"{os.getenv('POSTGRES_DB')}"
+)
 
 
-def initialize_database():
-    conn = get_connection()
+engine = create_engine(DATABASE_URL)
 
-    with conn.cursor() as cursor:
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS tasks (
-                id SERIAL PRIMARY KEY,
-                title TEXT NOT NULL,
-                done BOOLEAN NOT NULL
-            )
-        """)
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False
+)
 
-        cursor.execute("SELECT COUNT(*) FROM tasks")
-        count = cursor.fetchone()["count"]
 
-        if count == 0:
-            sample_tasks = [
-                ("Learn FastAPI", False),
-                ("Build CRUD API", False),
-                ("Learn PostgreSQL", False)
-            ]
+class Base(DeclarativeBase):
+    pass
 
-            cursor.executemany(
-                "INSERT INTO tasks (title, done) VALUES (%s, %s)",
-                sample_tasks
-            )
 
-    conn.commit()
-    conn.close()
+def get_db():
+    db = SessionLocal()
+
+    try:
+        yield db
+    finally:
+        db.close()
